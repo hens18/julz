@@ -105,39 +105,46 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
 }
 
 /* ---------- hero ---------- */
+/* Two stacked rows: the star stage fills the leftover height, the copy sits below it */
 .hero {
   position: relative;
   min-height: 100svh;
-  display: flex; flex-direction: column; justify-content: flex-end;
-  padding: 120px var(--gutter) clamp(28px, 5vh, 56px);
+  display: flex; flex-direction: column;
+  gap: clamp(12px, 3vh, 32px);
+  padding: 88px var(--gutter) clamp(28px, 5vh, 56px);
   overflow: hidden;
-  isolation: isolate;
 }
-.hero__media { position: absolute; inset: 0; z-index: -1; background: var(--black); }
+.hero__media {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: clamp(220px, 40svh, 620px);
+  margin-inline: calc(var(--gutter) * -1);
+  background: var(--black);
+  -webkit-mask-image: radial-gradient(ellipse 72% 80% at 50% 50%, #000 58%, transparent 100%);
+          mask-image: radial-gradient(ellipse 72% 80% at 50% 50%, #000 58%, transparent 100%);
+}
 .hero__video {
   position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover;
-  transform: scale(1.04);
+  object-fit: contain;
   animation: settle 2.4s var(--ease) both;
 }
 .hero__fallback {
-  position: absolute; left: 50%; top: 44%;
-  width: min(62vw, 720px); aspect-ratio: 552 / 300;
+  position: absolute; left: 50%; top: 50%;
+  width: min(64%, 720px); max-height: 70%; aspect-ratio: 552 / 300;
   translate: -50% -50%;
   color: var(--white);
   filter: drop-shadow(0 0 30px rgba(255,255,255,.25));
   animation: breathe 6s ease-in-out infinite;
 }
-.hero__vignette {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.35) 38%, rgba(0,0,0,0) 60%),
-    radial-gradient(120% 80% at 50% 45%, transparent 55%, rgba(0,0,0,.7) 100%);
-}
-@keyframes settle { from { transform: scale(1.14); opacity: 0; } to { transform: scale(1.04); opacity: 1; } }
+@keyframes settle { from { transform: scale(1.1); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes breathe { 50% { filter: drop-shadow(0 0 60px rgba(255,255,255,.45)); scale: 1.02; } }
+@media (max-width: 720px) {
+  .hero__media { min-height: 44svh; }
+  .hero__video { scale: 1.35; }
+  .hero__fallback { width: 82%; }
+}
 
-.hero__content { max-width: 1400px; width: 100%; }
+.hero__content { flex: none; width: 100%; }
 .eyebrow { display: flex; align-items: center; gap: 10px; color: rgba(245,245,242,.7); }
 .dot {
   width: 6px; height: 6px; border-radius: 50%; background: var(--white);
@@ -147,9 +154,9 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
 @keyframes ping { 70%, 100% { box-shadow: 0 0 0 10px rgba(255,255,255,0); } }
 
 .hero__title {
-  margin: 0 0 clamp(24px, 4vh, 40px);
+  margin: 0 0 clamp(18px, 3vh, 32px);
   font-weight: 500;
-  font-size: clamp(64px, 13.5vw, 220px);
+  font-size: clamp(56px, min(11vw, 17svh), 190px);
   line-height: .86;
   letter-spacing: -0.055em;
 }
@@ -163,7 +170,7 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
 .hero__lede { max-width: 440px; margin: 0; color: rgba(245,245,242,.78); }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .hero__scroll {
-  position: absolute; right: var(--gutter); top: 50%;
+  position: absolute; right: var(--gutter); top: 38%;
   display: flex; flex-direction: column; align-items: center; gap: 14px;
   text-decoration: none; font: 11px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--mute);
   writing-mode: vertical-rl;
@@ -288,10 +295,4 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
   html { scroll-behavior: auto; }
 }
 
-/* keep the star clear of the headline */
-.hero__video { object-position: 50% 50%; top: -7%; }
-@media (max-width: 720px) {
-  .hero__video { top: -14%; }
-  .hero__fallback { top: 30%; width: 78vw; }
-  .pillar { grid-template-columns: 36px 1fr; }
-}
+@media (max-width: 720px) { .pillar { grid-template-columns: 36px 1fr; } }
