@@ -104,6 +104,108 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
   .nav__links a:not(.nav__cta) { display: none; }
 }
 
+/* ---------- hero: the star owns the whole first screen ---------- */
+.hero {
+  position: relative;
+  height: 100svh; min-height: 480px;
+  overflow: hidden;
+  background: var(--black);
+}
+.hero__media { position: absolute; inset: 0; }
+.hero__video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover;
+  animation: settle 2.4s var(--ease) both;
+}
+.hero__fallback {
+  position: absolute; left: 50%; top: 50%;
+  width: min(64vw, 900px); aspect-ratio: 552 / 300;
+  translate: -50% -50%;
+  color: var(--white);
+  filter: drop-shadow(0 0 30px rgba(255,255,255,.25));
+  animation: breathe 6s ease-in-out infinite;
+}
+/* soft fade into the next section */
+.hero::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 18%;
+  background: linear-gradient(transparent, var(--black));
+  pointer-events: none;
+}
+@keyframes settle { from { transform: scale(1.1); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes breathe { 50% { filter: drop-shadow(0 0 60px rgba(255,255,255,.45)); scale: 1.02; } }
+/* portrait screens: cover would crop the star's tips, so fit it instead */
+@media (max-aspect-ratio: 1/1) {
+  .hero__video { object-fit: contain; scale: 1.35; }
+  .hero__fallback { width: 82vw; }
+}
+
+/* ---------- intro (headline under the hero) ---------- */
+.intro { padding: clamp(64px, 10vw, 140px) var(--gutter) clamp(64px, 8vw, 110px); }
+.intro__content { width: 100%; }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin: 0 0 28px;
+}
+.section-title {
+  font-weight: 500;
+  font-size: clamp(40px, 6.4vw, 96px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+.section-title em { font-size: 1.06em; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  height: 52px; padding: 0 26px;
+  border-radius: 999px;
+  font: 500 15px/1 var(--sans);
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform .5s var(--ease), background .3s, color .3s, border-color .3s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn--light { background: var(--white); color: var(--black); }
+.btn--light:hover { background: #fff; }
+.btn--ghost { border-color: rgba(245,245,242,.28); color: var(--white); background: rgba(0,0,0,.25); backdrop-filter: blur(8px); }
+.btn--ghost:hover { border-color: var(--white); }
+.btn__arrow { width: 14px; height: 14px; transition: transform .4s var(--ease); }
+.btn:hover .btn__arrow { transform: translate(2px, -2px); }
+
+/* ---------- nav ---------- */
+.nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px var(--gutter);
+  transition: background .4s, padding .4s var(--ease), border-color .4s;
+  border-bottom: 1px solid transparent;
+}
+.nav.is-scrolled {
+  padding-top: 14px; padding-bottom: 14px;
+  background: rgba(0,0,0,.72);
+  backdrop-filter: blur(14px) saturate(140%);
+  border-bottom-color: var(--line);
+}
+.nav__brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 600; letter-spacing: .18em; font-size: 14px; }
+.nav__mark { width: 34px; height: 19px; }
+.nav__links { display: flex; align-items: center; gap: clamp(16px, 3vw, 36px); font-size: 14px; }
+.nav__links a { text-decoration: none; color: var(--mute); transition: color .3s; }
+.nav__links a:hover { color: var(--white); }
+.nav__links .nav__cta {
+  color: var(--black); background: var(--white);
+  padding: 9px 18px; border-radius: 999px; font-weight: 500;
+}
+.nav__links .nav__cta:hover { color: var(--black); }
+@media (max-width: 560px) {
+  .nav__links a:not(.nav__cta) { display: none; }
+}
+
 /* ---------- hero ---------- */
 /* Two stacked rows: the star stage fills the leftover height, the copy sits below it */
 .hero {
@@ -144,7 +246,6 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
   .hero__fallback { width: 82%; }
 }
 
-.hero__content { flex: none; width: 100%; }
 .eyebrow { display: flex; align-items: center; gap: 10px; color: rgba(245,245,242,.7); }
 .dot {
   width: 6px; height: 6px; border-radius: 50%; background: var(--white);
@@ -154,9 +255,9 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
 @keyframes ping { 70%, 100% { box-shadow: 0 0 0 10px rgba(255,255,255,0); } }
 
 .hero__title {
-  margin: 0 0 clamp(18px, 3vh, 32px);
+  margin: 0 0 clamp(24px, 4vh, 40px);
   font-weight: 500;
-  font-size: clamp(56px, min(11vw, 17svh), 190px);
+  font-size: clamp(56px, 12.5vw, 210px);
   line-height: .86;
   letter-spacing: -0.055em;
 }
@@ -170,14 +271,13 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
 .hero__lede { max-width: 440px; margin: 0; color: rgba(245,245,242,.78); }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .hero__scroll {
-  position: absolute; right: var(--gutter); top: 38%;
-  display: flex; flex-direction: column; align-items: center; gap: 14px;
-  text-decoration: none; font: 11px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--mute);
-  writing-mode: vertical-rl;
+  position: absolute; left: 50%; bottom: clamp(20px, 4vh, 40px); z-index: 1;
+  translate: -50% 0;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  text-decoration: none; font: 11px var(--mono); letter-spacing: .24em; text-transform: uppercase; color: var(--mute);
 }
-.hero__scroll i { width: 1px; height: 64px; background: linear-gradient(var(--white), transparent); animation: drip 2.2s var(--ease) infinite; transform-origin: top; }
-@keyframes drip { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
-@media (max-width: 720px) { .hero__scroll { display: none; } }
+.hero__scroll:hover { color: var(--white); }
+.hero__scroll i { width: 1px; height: 48px; background: linear-gradient(var(--white), transparent); animation: drip 2.2s var(--ease) infinite; transform-origin: top; }
 
 /* ---------- marquee ---------- */
 .marquee { border-block: 1px solid var(--line); overflow: hidden; padding: 22px 0; }
