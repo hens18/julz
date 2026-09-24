@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>JULZ — Collection 01</title>
   <meta name="description" content="JULZ. Apparel, carefully made. Collection 01.">
-  <meta name="theme-color" content="#efede8">
+  <meta name="theme-color" content="#000000">
   <meta property="og:title" content="JULZ">
   <meta property="og:description" content="Apparel, carefully made. Collection 01.">
   <meta property="og:image" content="assets/julz-logo.jpg">
@@ -24,7 +24,7 @@
   <a class="skip" href="#shop">Skip to shop</a>
 
   <header class="bar">
-    <a class="bar__mark" href="#top" aria-label="JULZ home"><svg aria-hidden="true"><use href="#mark"/></svg></a>
+    <a class="bar__logo" href="#top" aria-label="JULZ home">JULZ</a>
     <nav class="bar__nav" aria-label="Primary">
       <a href="#shop">Shop</a>
       <a href="#about">About</a>
@@ -33,11 +33,38 @@
   </header>
 
   <main id="top">
-    <!-- WORDMARK -->
-    <section class="masthead" aria-label="JULZ">
-      <h1 class="wordmark" data-fit>
+
+    <!-- SPACE HERO: 3D star (js/star3d.js) spins here, then drops into the shop heading -->
+    <section class="space" aria-label="JULZ">
+      <div class="space__sticky">
+        <svg class="space__static" aria-hidden="true"><use href="#mark"/></svg>
+        <p class="space__corner space__corner--tl k">Collection 01</p>
+        <p class="space__corner space__corner--tr k" data-coord>N 00°00′</p>
+        <h1 class="space__line" data-space-line><span>Follow</span> <em>the star.</em></h1>
+        <p class="space__corner space__corner--bl k">Apparel — Est. 2026</p>
+        <p class="space__scroll k" data-space-scroll>Scroll<i aria-hidden="true"></i></p>
+      </div>
+    </section>
+
+    <!-- SHOP -->
+    <section class="shop" id="shop" aria-labelledby="shop-title">
+      <div class="shop__head">
+        <h2 id="shop-title" class="shop__title"><span class="drop-slot" data-drop-slot aria-hidden="true"><svg><use href="#mark"/></svg></span>Collection 01 <span class="muted" data-shown></span></h2>
+        <div class="filters" role="group" aria-label="Filter products">
+          <button type="button" class="is-on" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-filter="tops" aria-pressed="false">Tops</button>
+          <button type="button" data-filter="bottoms" aria-pressed="false">Bottoms</button>
+          <button type="button" data-filter="accessories" aria-pressed="false">Accessories</button>
+        </div>
+      </div>
+      <ul class="grid" data-grid></ul>
+    </section>
+
+    <!-- ABOUT / WORDMARK -->
+    <section class="masthead" aria-label="About JULZ">
+      <p class="wordmark" data-fit aria-hidden="true">
         <span>JULZ</span><svg class="wordmark__star" aria-hidden="true"><use href="#mark"/></svg>
-      </h1>
+      </p>
       <hr class="rule">
       <div class="info">
         <p class="info__cell"><span class="k">JULZ</span></p>
@@ -51,31 +78,6 @@
         </div>
         <p class="info__cell info__cell--end"><span class="k">Coll. 01 — © <span data-year>2026</span></span></p>
       </div>
-    </section>
-
-    <!-- SHOP -->
-    <section class="shop" id="shop" aria-labelledby="shop-title">
-      <div class="shop__head">
-        <h2 id="shop-title" class="k">Collection 01 <span class="muted" data-shown></span></h2>
-        <div class="filters" role="group" aria-label="Filter products">
-          <button type="button" class="is-on" data-filter="all" aria-pressed="true">All</button>
-          <button type="button" data-filter="tops" aria-pressed="false">Tops</button>
-          <button type="button" data-filter="bottoms" aria-pressed="false">Bottoms</button>
-          <button type="button" data-filter="accessories" aria-pressed="false">Accessories</button>
-        </div>
-      </div>
-      <ul class="grid" data-grid></ul>
-    </section>
-
-    <!-- CAMPAIGN (star video) -->
-    <section class="campaign" aria-label="JULZ campaign film">
-      <svg class="campaign__fallback" aria-hidden="true"><use href="#mark"/></svg>
-      <video class="campaign__video" autoplay muted loop playsinline preload="metadata" poster="assets/julz-logo.jpg" aria-hidden="true">
-        <source src="assets/hero.mp4" type="video/mp4">
-        <source src="https://d8j0ntlcm91z4.cloudfront.net/user_3DIPB9u9Vmf3aGnCOqwMyZykmRt/hf_20260923_235937_9fdd17e2-c5a2-4987-b42d-bc585f961254.mp4" type="video/mp4">
-      </video>
-      <p class="campaign__cap k">Follow the star</p>
-      <p class="campaign__cap campaign__cap--r k">Film 01</p>
     </section>
 
     <!-- FAQ -->
@@ -120,6 +122,13 @@
     </div>
   </aside>
 
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    } }
+  </script>
   <script src="main.js" defer></script>
+  <script type="module" src="js/star3d.js"></script>
 </body>
 </html>

@@ -15,7 +15,6 @@
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const money = (n) => `$${n}`;
   const mark = '<svg aria-hidden="true"><use href="#mark"/></svg>';
-  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // ---- Wordmark: scale "JULZ ✦" to exactly fill the content width ----
   const word = $("[data-fit]");
@@ -99,12 +98,6 @@
   $$("[data-bag-close]").forEach((el) => el.addEventListener("click", close));
   addEventListener("keydown", (e) => { if (e.key === "Escape" && !drawer.hidden) close(); });
   render();
-
-  // ---- Campaign video: hide if every source fails so the SVG star shows ----
-  const video = $(".campaign__video");
-  const sources = video ? $$("source", video) : [];
-  sources.at(-1)?.addEventListener("error", () => { video.style.display = "none"; });
-  if (video && reduceMotion) video.pause();
 
   // ---- Newsletter (connect to your email provider) ----
   const form = $("[data-join]");
