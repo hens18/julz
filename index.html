@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JULZ — Community</title>
+  <meta name="description" content="JULZ is a community. Find your people, follow the star.">
+  <meta name="theme-color" content="#000000">
+  <meta property="og:title" content="JULZ">
+  <meta property="og:description" content="A community. Follow the star.">
+  <meta property="og:image" content="assets/julz-logo.jpg">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="150 276 552 300"><path fill="currentColor" fill-rule="evenodd" d="M 425.997 284.250 C 425.992 287.980, 419.496 318.289, 414.477 338 C 407.318 366.116, 398.596 391.312, 390.982 405.879 L 387.126 413.257 392.121 422.120 C 407.289 449.026, 414.585 476.895, 422.991 540.034 C 424.636 552.390, 425.986 563.962, 425.991 565.750 C 426.008 572.107, 427.717 568.873, 428.360 561.267 C 429.517 547.579, 435.945 505.397, 439.495 488.200 C 445.655 458.351, 449.166 447.177, 457.952 429.454 L 465.906 413.409 460.341 400.454 C 450.098 376.610, 437.594 333.635, 430.818 298.988 C 427.824 283.677, 426.005 278.116, 425.997 284.250 M 385.972 344.614 C 356.776 383.288, 313.007 406.840, 246 419.931 C 217.794 425.442, 181.405 429.983, 165.193 430.015 C 160.962 430.024, 156.825 430.467, 156 431 C 154.954 431.676, 156.672 431.974, 161.671 431.985 C 189.335 432.044, 238.454 438.315, 275.500 446.518 C 334.617 459.608, 368.800 478.935, 390.433 511.500 C 393.356 515.900, 397.042 521.115, 398.624 523.088 C 400.206 525.062, 403.075 529.436, 405 532.808 C 406.925 536.181, 408.790 538.954, 409.146 538.970 C 410.141 539.016, 399.486 506.399, 394.926 495.443 C 372.501 441.563, 360.560 436.910, 232 431.965 C 215.775 431.341, 202.388 430.718, 202.251 430.582 C 202.113 430.446, 209.763 429.785, 219.251 429.114 C 273.814 425.252, 315.167 419.588, 334.500 413.328 C 355.028 406.681, 366.932 395.607, 377.636 373.196 C 381.840 364.394, 393.128 336.795, 392.699 336.366 C 392.543 336.209, 389.515 339.921, 385.972 344.614 M 463.879 341.078 C 474.044 370.254, 484.282 389.338, 495.394 399.823 C 510.407 413.990, 543.294 421.601, 615 427.504 C 653.567 430.679, 652.841 430.504, 631 431.344 C 551.241 434.409, 527.794 436.473, 509.496 442.042 C 479.546 451.158, 468.413 466.091, 450.501 521.173 C 447.476 530.478, 445 538.578, 445 539.174 C 445 539.770, 447.909 535.459, 451.465 529.595 C 479.593 483.209, 505.602 464.659, 565 448.618 C 596.323 440.159, 656.826 432.006, 688.309 432.001 C 692.593 432, 694.889 431.629, 694.500 431 C 694.160 430.450, 691.239 430, 688.008 430 C 680.972 430, 638.378 425.531, 625 423.390 C 548.336 411.116, 499.129 385.927, 467.365 342.697 C 464.860 339.289, 462.626 336.310, 462.400 336.078 C 462.174 335.846, 462.840 338.096, 463.879 341.078"/></symbol>
+  </svg>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" data-nav>
+    <a class="nav__brand" href="#top" aria-label="JULZ home">
+      <svg class="nav__mark" aria-hidden="true"><use href="#mark"/></svg>
+      <span>JULZ</span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#manifesto">Manifesto</a>
+      <a href="#circle">The Circle</a>
+      <a href="#join" class="nav__cta">Join</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero" id="top">
+      <div class="hero__media" aria-hidden="true">
+        <!-- Fallback when the video can't load: the vector mark with a slow glow -->
+        <svg class="hero__fallback"><use href="#mark"/></svg>
+        <video class="hero__video" autoplay muted loop playsinline preload="auto" poster="assets/julz-logo.jpg">
+          <source src="assets/hero.mp4" type="video/mp4">
+          <source src="https://d8j0ntlcm91z4.cloudfront.net/user_3DIPB9u9Vmf3aGnCOqwMyZykmRt/hf_20260923_235937_9fdd17e2-c5a2-4987-b42d-bc585f961254.mp4" type="video/mp4">
+        </video>
+        <div class="hero__vignette"></div>
+      </div>
+
+      <div class="hero__content">
+        <p class="eyebrow" data-reveal>
+          <span class="dot" aria-hidden="true"></span> Community — est. by the ones who showed up
+        </p>
+        <h1 class="hero__title" data-reveal>
+          Find your <em>north.</em>
+        </h1>
+        <div class="hero__foot" data-reveal>
+          <p class="hero__lede">
+            JULZ is a circle of people moving in the same direction.
+            One star, many paths — and a place to walk them together.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--light" href="#join">Join the circle</a>
+            <a class="btn btn--ghost" href="https://www.instagram.com/julz.us/" target="_blank" rel="noopener">@julz.us</a>
+          </div>
+        </div>
+      </div>
+
+      <a class="hero__scroll" href="#manifesto" aria-label="Scroll to manifesto">
+        <span>Scroll</span><i aria-hidden="true"></i>
+      </a>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Gather</span><svg><use href="#mark"/></svg>
+        <span>Build</span><svg><use href="#mark"/></svg>
+        <span>Rise</span><svg><use href="#mark"/></svg>
+        <span>Together</span><svg><use href="#mark"/></svg>
+        <span>Gather</span><svg><use href="#mark"/></svg>
+        <span>Build</span><svg><use href="#mark"/></svg>
+        <span>Rise</span><svg><use href="#mark"/></svg>
+        <span>Together</span><svg><use href="#mark"/></svg>
+      </div>
+    </div>
+
+    <!-- MANIFESTO -->
+    <section class="manifesto" id="manifesto">
+      <p class="label" data-reveal>01 — Manifesto</p>
+      <p class="manifesto__text" data-reveal>
+        Every sky has a star people steer by.
+        <span class="muted">We're not here to be the loudest light.</span>
+        We're here to be the one you can <em>always find</em> —
+        <span class="muted">a fixed point for people who are still becoming.</span>
+      </p>
+    </section>
+
+    <!-- PILLARS -->
+    <section class="pillars" aria-labelledby="pillars-title">
+      <div class="pillars__head">
+        <p class="label" data-reveal>02 — What we do</p>
+        <h2 id="pillars-title" class="section-title" data-reveal>Four points.<br><em>One direction.</em></h2>
+      </div>
+      <ol class="pillars__list">
+        <li class="pillar" data-reveal>
+          <span class="pillar__num">N</span>
+          <h3>Gather</h3>
+          <p>Real rooms, real people. Meetups and nights that turn followers into friends.</p>
+        </li>
+        <li class="pillar" data-reveal>
+          <span class="pillar__num">E</span>
+          <h3>Build</h3>
+          <p>Share what you're making. Get eyes on it from people who actually care.</p>
+        </li>
+        <li class="pillar" data-reveal>
+          <span class="pillar__num">S</span>
+          <h3>Ground</h3>
+          <p>A steady place to come back to when everything else is moving fast.</p>
+        </li>
+        <li class="pillar" data-reveal>
+          <span class="pillar__num">W</span>
+          <h3>Rise</h3>
+          <p>When one of us wins, the whole circle shows up. That's the deal.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- THE CIRCLE -->
+    <section class="circle" id="circle">
+      <canvas class="circle__sky" aria-hidden="true"></canvas>
+      <div class="circle__inner">
+        <p class="label" data-reveal>03 — The Circle</p>
+        <p class="circle__count" data-reveal>
+          <span data-count="205">0</span><sup>+</sup>
+        </p>
+        <p class="circle__caption" data-reveal>
+          people already follow the star — and we haven't posted once.
+          <br><span class="muted">Imagine what happens when we do.</span>
+        </p>
+        <a class="btn btn--light" href="https://www.instagram.com/julz.us/" target="_blank" rel="noopener" data-reveal>
+          Follow on Instagram
+          <svg class="btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13 13 3M5 3h8v8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- JOIN -->
+    <section class="join" id="join">
+      <svg class="join__mark" aria-hidden="true"><use href="#mark"/></svg>
+      <p class="label" data-reveal>04 — Join</p>
+      <h2 class="section-title join__title" data-reveal>Be here <em>before</em><br>the first post.</h2>
+      <p class="join__lede" data-reveal>Early members hear everything first — drops, meetups, and the launch itself.</p>
+      <form class="join__form" data-join data-reveal novalidate>
+        <label class="sr-only" for="email">Email address</label>
+        <input id="email" name="email" type="email" autocomplete="email" placeholder="you@email.com" required>
+        <button class="btn btn--light" type="submit">Get on the list</button>
+        <p class="join__status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__brand">
+      <svg aria-hidden="true"><use href="#mark"/></svg>
+      <span>JULZ</span>
+    </div>
+    <p class="footer__meta">© <span data-year></span> JULZ. Community.</p>
+    <a href="https://www.instagram.com/julz.us/" target="_blank" rel="noopener">Instagram ↗</a>
+  </footer>
+
+  <script src="main.js" defer></script>
+</body>
+</html>
