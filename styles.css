@@ -34,13 +34,15 @@ h1, h2, p, ul { margin: 0; }
 .skip { position: absolute; left: 8px; top: -40px; z-index: 100; background: var(--ink); color: var(--paper); padding: 8px 12px; }
 .skip:focus { top: 8px; }
 
-/* ---------- top bar (difference blend: white over space, black over paper) ---------- */
+/* ---------- top bar (white over space, ink over paper — toggled in main.js) ---------- */
 .bar {
   position: fixed; inset: 0 0 auto 0; z-index: 40;
   display: flex; align-items: center; justify-content: space-between;
   padding: 18px var(--gutter);
-  color: #fff; mix-blend-mode: difference;
+  color: #f5f5f2;
+  transition: color .35s var(--ease);
 }
+.bar.is-dark { color: var(--ink); }
 .bar__logo { font-weight: 700; font-size: clamp(18px, 2vw, 28px); letter-spacing: -0.04em; }
 .bar__nav { display: flex; align-items: baseline; gap: clamp(20px, 5vw, 72px); font-size: clamp(18px, 2vw, 28px); letter-spacing: -0.03em; }
 .bar__nav a, .bar__bag { position: relative; }
@@ -207,7 +209,7 @@ h1, h2, p, ul { margin: 0; }
 }
 /* fade the void into paper right before the shop */
 .space::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 32svh;
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 18svh;
   background: linear-gradient(#000, var(--paper));
   pointer-events: none;
 }

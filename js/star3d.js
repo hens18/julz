@@ -99,6 +99,151 @@ function init() {
   const field = new THREE.Points(starGeo, starMat);
   scene.add(field);
 
+  // ---------- deep-space details: nebula, bright stars, planets, shooting stars ----------
+  const canvasTex = (w, h, draw) => {
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    draw(c.getContext("2d"), w, h);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+    return t;
+  };
+  const rand = (a, b) => a + Math.random() * (b - a);
+
+  // nebula: soft tinted clouds far behind everything
+  const nebulaTex = (tint) => canvasTex(512, 512, (g, w, h) => {
+    for (let i = 0; i < 26; i++) {
+      const x = rand(.2, .8) * w, y = rand(.2, .8) * h, r = rand(.12, .34) * w;
+      const grd = g.createRadialGradient(x, y, 0, x, y, r);
+      grd.addColorStop(0, `rgba(${tint},${rand(.02, .07)})`); grd.addColorStop(1, `rgba(${tint},0)`);
+      g.fillStyle = grd; g.fillRect(0, 0, w, h);
+    }
+  });
+  const nebulae = [["110,130,255", -0.6, 0.35], ["170,120,255", 0.6, -0.3], ["255,210,180", 0.15, 0.5]].map(([tint, fx, fy]) => {
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: nebulaTex(tint), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.9 }));
+    s.userData = { fx, fy, spin: rand(-0.02, 0.02) };
+    s.position.z = -2600;
+    scene.add(s);
+    return s;
+  });
+
+  // a second, brighter star layer that twinkles
+  const BRIGHT = 180;
+  const brightPos = new Float32Array(BRIGHT * 3);
+  for (let i = 0; i < BRIGHT; i++) {
+    brightPos[i * 3] = rand(-3200, 3200); brightPos[i * 3 + 1] = rand(-2200, 2200); brightPos[i * 3 + 2] = rand(-2400, -1200);
+  }
+  const brightGeo = new THREE.BufferGeometry();
+  brightGeo.setAttribute("position", new THREE.BufferAttribute(brightPos, 3));
+  const dotTex = canvasTex(64, 64, (g) => {
+    const grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grd.addColorStop(0, "rgba(255,255,255,1)"); grd.addColorStop(0.25, "rgba(220,230,255,.5)"); grd.addColorStop(1, "rgba(255,255,255,0)");
+    g.fillStyle = grd; g.fillRect(0, 0, 64, 64);
+  });
+  const brightMat = new THREE.PointsMaterial({ size: 14, map: dotTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+  const brightField = new THREE.Points(brightGeo, brightMat);
+  scene.add(brightField);
+
+
+  // planets are lit by the JULZ star itself: lambert from the star's direction + atmosphere rim
+  const planetMat = (map, rimColor) => new THREE.ShaderMaterial({
+    transparent: true,
+    uniforms: { map: { value: map }, sunDir: { value: new THREE.Vector3(1, 0, 0.3) }, opacity: { value: 1 }, rim: { value: new THREE.Color(rimColor) } },
+    vertexShader: `varying vec3 vN; varying vec2 vUv;
+      void main(){ vUv = uv; vN = normalize(mat3(modelMatrix) * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }`,
+    fragmentShader: `uniform sampler2D map; uniform vec3 sunDir; uniform float opacity; uniform vec3 rim; varying vec3 vN; varying vec2 vUv;
+      void main(){
+        vec3 n = normalize(vN);
+        float d = max(dot(n, normalize(sunDir)), 0.);
+        vec3 tex = texture2D(map, vUv).rgb;
+        vec3 col = tex * (0.035 + 0.95 * pow(d, 0.9));
+        float fres = pow(1. - max(n.z, 0.), 2.6);
+        col += rim * fres * (0.15 + 0.85 * d) * 0.6;
+        gl_FragColor = vec4(col, opacity);
+        #include <colorspace_fragment>
+      }`,
+  });
+
+  const gasTex = canvasTex(1024, 512, (g, w, h) => {
+    const bands = ["#d8cfc2", "#b8ab98", "#8f8272", "#c9bfb1", "#6e645a", "#a99c8a", "#e2dbd0", "#7f7466"];
+    for (let y = 0; y < h; y++) {
+      const t = y / h;
+      const i = Math.floor((t * 9 + Math.sin(t * 40) * 0.25) * 1.3) % bands.length;
+      g.fillStyle = bands[i]; g.fillRect(0, y, w, 1);
+    }
+    g.globalAlpha = 0.18; // turbulence streaks
+    for (let k = 0; k < 900; k++) {
+      g.fillStyle = Math.random() > 0.5 ? "#fff" : "#2a241f";
+      g.fillRect(rand(0, w), rand(0, h), rand(20, 160), rand(1, 3));
+    }
+    g.globalAlpha = 0.5; g.fillStyle = "#5a4c40"; // a storm
+    g.beginPath(); g.ellipse(w * 0.62, h * 0.63, 46, 18, 0, 0, Math.PI * 2); g.fill();
+  });
+  const planet = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 96, 64),
+    planetMat(gasTex, 0xc9d4ff)
+  );
+  planet.rotation.z = 0.32;
+
+  // planet ring: remap RingGeometry UVs so the texture runs radially
+  const ringGeo = new THREE.RingGeometry(1.35, 2.25, 160, 1);
+  const rp = ringGeo.attributes.position, ruv = ringGeo.attributes.uv, v3 = new THREE.Vector3();
+  for (let i = 0; i < rp.count; i++) { v3.fromBufferAttribute(rp, i); ruv.setXY(i, (v3.length() - 1.35) / 0.9, 0.5); }
+  const ringTex = canvasTex(512, 4, (g, w) => {
+    for (let x = 0; x < w; x++) {
+      const t = x / w;
+      const a = (0.25 + 0.55 * Math.abs(Math.sin(t * 38)) * Math.abs(Math.sin(t * 7 + 1))) * (t > 0.58 && t < 0.63 ? 0.1 : 1) * Math.sin(t * Math.PI);
+      g.fillStyle = `rgba(225,215,200,${a})`; g.fillRect(x, 0, 1, 4);
+    }
+  });
+  const planetRing = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ map: ringTex, color: 0x77716a, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+  planetRing.rotation.x = Math.PI / 2 - 0.28;
+  const planetSys = new THREE.Group();
+  planetSys.add(planet, planetRing);
+  planetSys.rotation.z = 0.36;
+  scene.add(planetSys);
+
+  const rockTex = canvasTex(512, 256, (g, w, h) => {
+    g.fillStyle = "#8d8a86"; g.fillRect(0, 0, w, h);
+    for (let k = 0; k < 2200; k++) { g.fillStyle = `rgba(${Math.random() > .5 ? "255,255,255" : "0,0,0"},.05)`; g.fillRect(rand(0, w), rand(0, h), rand(2, 10), rand(2, 10)); }
+    for (let k = 0; k < 70; k++) {
+      const x = rand(0, w), y = rand(h * .1, h * .9), r = rand(2, 16);
+      g.fillStyle = "rgba(40,38,36,.35)"; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = "rgba(255,255,255,.25)"; g.lineWidth = 1.2; g.beginPath(); g.arc(x - .6, y - .6, r, Math.PI, Math.PI * 1.7); g.stroke();
+    }
+  });
+  const moonPlanet = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 64, 48),
+    planetMat(rockTex, 0xffffff)
+  );
+  scene.add(moonPlanet);
+
+  // a faint atmosphere halo behind the gas giant
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x8fa2ff, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.2 }));
+  scene.add(halo);
+
+  // shooting stars: short additive streaks that fire every few seconds
+  const shooters = Array.from({ length: 2 }, () => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(6), 3));
+    g.setAttribute("color", new THREE.BufferAttribute(new Float32Array([1, 1, 1, 0, 0, 0]), 3));
+    const l = new THREE.Line(g, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+    l.userData = { life: 0, next: rand(1.5, 5), x: 0, y: 0, vx: 0, vy: 0 };
+    l.frustumCulled = false;
+    scene.add(l);
+    return l;
+  });
+
+  // positions are in px relative to the viewport, recomputed on resize
+  const spaceLayout = { R1: 200, R2: 50, p1: new THREE.Vector3(), p2: new THREE.Vector3() };
+  const layoutSpace = () => {
+    const big = Math.max(W, H);
+    spaceLayout.R1 = Math.min(Math.max(big * 0.15, 100), 260);
+    spaceLayout.R2 = spaceLayout.R1 * 0.24;
+    const mobile = W < 700;
+    spaceLayout.p1.set(-W * (mobile ? 0.44 : 0.42), -H * (mobile ? 0.36 : 0.34), -700);
+    spaceLayout.p2.set(W * (mobile ? 0.3 : 0.36), H * (mobile ? 0.3 : 0.28), -1100);
+    nebulae.forEach((s) => { s.scale.setScalar(big * 2.4); s.position.x = s.userData.fx * big; s.position.y = s.userData.fy * big; });
+  };
+
   // ---------- layout / scroll math ----------
   let W = 0, H = 0, dropEnd = 1;
   const resize = () => {
@@ -110,6 +255,7 @@ function init() {
     // scroll position at which the slot sits at 32% of the viewport — that's where the star lands
     const r = slot.getBoundingClientRect();
     dropEnd = Math.max(1, r.top + scrollY + r.height / 2 - H * 0.32);
+    layoutSpace();
   };
   resize();
   addEventListener("resize", resize);
@@ -143,11 +289,11 @@ function init() {
     pivot.position.set(lerp(0, endX, drop), lerp(0, endY, fall), 0);
     pivot.scale.setScalar(lerp(startW, r.width, drop));
 
-    // spin: idle drift, faster with scroll, then settle face-on as it lands
-    spin += dt * (0.45 + (1 - drop) * p * 5);
+    // spin: never stops — idle drift, faster through space, and a steady turn once landed
+    spin += dt * (0.7 + (1 - drop) * p * 5);
     const settle = smooth(0.7, 1, p);
     const wobble = (1 - settle);
-    star.rotation.y = lerp(spin, Math.round(spin / (Math.PI * 2)) * Math.PI * 2, settle);
+    star.rotation.y = spin;
     star.rotation.x = wobble * (Math.sin(now * 0.0006) * 0.12 + mouse.y * 0.5);
     star.rotation.z = wobble * (mouse.x * -0.25 + drop * Math.sin(drop * Math.PI) * 0.6);
 
@@ -168,6 +314,53 @@ function init() {
     }
     starGeo.attributes.position.needsUpdate = true;
     field.rotation.z = now * 0.00002 + mouse.x * 0.05;
+
+    // planets drift up slower than the page (depth), with a little mouse parallax
+    const { R1, R2, p1, p2 } = spaceLayout;
+    planetSys.position.set(p1.x + mouse.x * -40, p1.y + p * H * 0.9 + mouse.y * 30, p1.z);
+    planetSys.scale.setScalar(R1);
+    planet.rotation.y += dt * 0.05;
+    halo.position.copy(planetSys.position).setZ(p1.z - 10);
+    halo.scale.setScalar(R1 * 3.1);
+    moonPlanet.position.set(p2.x + mouse.x * -70, p2.y + p * H * 1.3 + mouse.y * 50, p2.z);
+    moonPlanet.scale.setScalar(R2);
+    moonPlanet.rotation.y += dt * 0.12;
+    planet.material.uniforms.sunDir.value.set(pivot.position.x - planetSys.position.x, pivot.position.y - planetSys.position.y, 700);
+    moonPlanet.material.uniforms.sunDir.value.set(pivot.position.x - moonPlanet.position.x, pivot.position.y - moonPlanet.position.y, 900);
+    planet.material.uniforms.opacity.value = moonPlanet.material.uniforms.opacity.value = spaceFade;
+    planetRing.material.opacity = spaceFade;
+    halo.material.opacity = 0.2 * spaceFade;
+    nebulae.forEach((s, i) => {
+      s.material.rotation += dt * s.userData.spin;
+      s.material.opacity = (0.7 + 0.3 * Math.sin(now * 0.0003 + i * 2)) * spaceFade;
+      s.position.z = -2600 + p * 900; // we drift into the clouds as we scroll
+    });
+    brightMat.opacity = (0.75 + 0.25 * Math.sin(now * 0.004)) * spaceFade;
+    brightField.rotation.z = now * 0.000012 + mouse.x * 0.03;
+    [planetSys, moonPlanet, halo, brightField, ...nebulae].forEach((o) => { o.visible = spaceFade > 0.01; });
+
+    shooters.forEach((s) => {
+      const u = s.userData;
+      if (u.life <= 0) {
+        u.next -= dt;
+        s.visible = false;
+        if (u.next <= 0 && spaceFade > 0.5) {
+          const dir = Math.random() > 0.5 ? 1 : -1;
+          u.x = rand(-0.5, 0.5) * W; u.y = rand(0.1, 0.5) * H;
+          const a = rand(0.35, 0.6), sp = rand(900, 1500);
+          u.vx = -dir * Math.cos(a) * sp; u.vy = -Math.sin(a) * sp;
+          u.life = rand(0.5, 0.9); u.next = rand(3, 7);
+        }
+        return;
+      }
+      u.life -= dt; u.x += u.vx * dt; u.y += u.vy * dt;
+      const tail = 0.12, arr = s.geometry.attributes.position.array;
+      arr[0] = u.x; arr[1] = u.y; arr[2] = -200;
+      arr[3] = u.x - u.vx * tail; arr[4] = u.y - u.vy * tail; arr[5] = -200;
+      s.geometry.attributes.position.needsUpdate = true;
+      s.material.opacity = Math.min(1, u.life * 3) * spaceFade;
+      s.visible = true;
+    });
 
     // chrome picks up less env once it's on paper, so it reads as black ink with highlights
     chrome.color.setScalar(lerp(1, 0.18, settle));

@@ -110,5 +110,12 @@
     if (ok) form.reset();
   });
 
+  // Top bar: switch to ink once the space section has scrolled mostly away
+  const bar = $(".bar"), space = $(".space");
+  const tone = () => bar.classList.toggle("is-dark", !space || space.getBoundingClientRect().bottom < innerHeight * 0.09 + 36);
+  addEventListener("scroll", tone, { passive: true });
+  addEventListener("resize", tone);
+  tone();
+
   $$("[data-year]").forEach((el) => { el.textContent = new Date().getFullYear(); });
 })();
