@@ -68,7 +68,8 @@ function init() {
     return m;
   });
   const moon = new THREE.Mesh(new THREE.SphereGeometry(0.012, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true }));
-  moon.position.x = 0.78; // sit on the inner ring
+  moon.position.x = 0.78; // invisible anchor on the inner ring — the cratered moon follows it
+  moon.visible = false;
   rings[0].add(moon);
 
   const glowTex = (() => {
@@ -233,14 +234,13 @@ function init() {
   });
 
   // positions are in px relative to the viewport, recomputed on resize
-  const spaceLayout = { R1: 200, R2: 50, p1: new THREE.Vector3(), p2: new THREE.Vector3() };
+  const spaceLayout = { R1: 120, p1: new THREE.Vector3() };
+  const moonAt = new THREE.Vector3();
   const layoutSpace = () => {
     const big = Math.max(W, H);
-    spaceLayout.R1 = Math.min(Math.max(big * 0.15, 100), 260);
-    spaceLayout.R2 = spaceLayout.R1 * 0.24;
+    spaceLayout.R1 = Math.min(Math.max(big * 0.09, 64), 160);
     const mobile = W < 700;
     spaceLayout.p1.set(-W * (mobile ? 0.44 : 0.42), -H * (mobile ? 0.36 : 0.34), -700);
-    spaceLayout.p2.set(W * (mobile ? 0.3 : 0.36), H * (mobile ? 0.3 : 0.28), -1100);
     nebulae.forEach((s) => { s.scale.setScalar(big * 2.4); s.position.x = s.userData.fx * big; s.position.y = s.userData.fy * big; });
   };
 
@@ -299,8 +299,8 @@ function init() {
 
     // rings + glow + starfield fade as we leave space
     const spaceFade = 1 - smooth(0.35, 0.8, p);
-    rings.forEach((m, i) => { m.rotation.z += dt * (0.25 + i * 0.12); m.material.opacity = 0.35 * spaceFade; });
-    moon.material.opacity = spaceFade;
+    const orbitScale = W < 700 ? 0.62 : 1; // tighter orbits on phones so the moon stays on screen
+    rings.forEach((m, i) => { m.rotation.z += dt * (0.25 + i * 0.12); m.scale.setScalar(orbitScale); m.material.opacity = 0.35 * spaceFade; });
     glow.material.opacity = 1 - smooth(0.3, 0.6, p);
     starMat.opacity = 0.9 * spaceFade;
     field.visible = spaceFade > 0.01;
@@ -316,17 +316,20 @@ function init() {
     field.rotation.z = now * 0.00002 + mouse.x * 0.05;
 
     // planets drift up slower than the page (depth), with a little mouse parallax
-    const { R1, R2, p1, p2 } = spaceLayout;
+    const { R1, p1 } = spaceLayout;
     planetSys.position.set(p1.x + mouse.x * -40, p1.y + p * H * 0.9 + mouse.y * 30, p1.z);
     planetSys.scale.setScalar(R1);
     planet.rotation.y += dt * 0.05;
     halo.position.copy(planetSys.position).setZ(p1.z - 10);
     halo.scale.setScalar(R1 * 3.1);
-    moonPlanet.position.set(p2.x + mouse.x * -70, p2.y + p * H * 1.3 + mouse.y * 50, p2.z);
-    moonPlanet.scale.setScalar(R2);
+    // the moon rides the star's inner orbit ring, passing in front of and behind it
+    pivot.updateMatrixWorld(true);
+    moon.getWorldPosition(moonAt);
+    moonPlanet.position.copy(moonAt);
+    moonPlanet.scale.setScalar(pivot.scale.x * 0.045);
     moonPlanet.rotation.y += dt * 0.12;
     planet.material.uniforms.sunDir.value.set(pivot.position.x - planetSys.position.x, pivot.position.y - planetSys.position.y, 700);
-    moonPlanet.material.uniforms.sunDir.value.set(pivot.position.x - moonPlanet.position.x, pivot.position.y - moonPlanet.position.y, 900);
+    moonPlanet.material.uniforms.sunDir.value.subVectors(pivot.position, moonPlanet.position);
     planet.material.uniforms.opacity.value = moonPlanet.material.uniforms.opacity.value = spaceFade;
     planetRing.material.opacity = spaceFade;
     halo.material.opacity = 0.2 * spaceFade;
